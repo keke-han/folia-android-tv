@@ -1,0 +1,91 @@
+/* src/styles/androidTv.css — TV-only focus visibility and independent scrolling columns. */
+html[data-folia-tv="true"] {
+    --tv-focus-color: #ffe066;
+    --tv-selected-bg: color-mix(in srgb, var(--text-primary, white) 14%, transparent);
+}
+html[data-folia-tv="true"] * { scroll-behavior: auto !important; }
+html[data-folia-tv="true"] :focus {
+    outline: 4px solid var(--tv-focus-color) !important;
+    box-shadow: 0 0 0 3px #111827, 0 0 18px #ffe06680 !important;
+    outline-offset: 3px !important;
+    scroll-margin: 12px;
+}
+html[data-folia-tv="true"] [data-tv-editing="true"]:focus {
+    outline-style: dashed !important;
+}
+html[data-folia-tv="true"] [data-tv-adjusting="true"]:focus { outline-style: dashed !important; }
+html[data-folia-tv="true"] [data-folia-tv-scope] {
+    backdrop-filter: none !important;
+    background-color: var(--bg-color, #111318) !important;
+}
+html[data-folia-tv="true"] [data-folia-settings-overlay] { padding: 16px !important; }
+html[data-folia-tv="true"] [data-folia-settings-overlay] > div.relative {
+    height: 100% !important;
+    max-height: 100% !important;
+    max-width: 1600px !important;
+}
+html[data-folia-tv="true"] .tv-settings-body { flex-direction: row !important; min-height: 0; }
+html[data-folia-tv="true"] [data-tv-sidebar] {
+    flex: 0 0 clamp(190px, 24vw, 280px);
+    width: clamp(190px, 24vw, 280px);
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 12px 12px 8px;
+    overscroll-behavior: contain;
+}
+html[data-folia-tv="true"] [data-tv-sidebar] button { min-height: 40px; }
+html[data-folia-tv="true"] [data-tv-content] { min-width: 0; min-height: 0; padding: 8px 12px 20px; }
+html[data-folia-tv="true"] .tv-visualizer-layout { display: flex; padding: 12px; }
+html[data-folia-tv="true"] .tv-visualizer-settings { flex: 1; flex-direction: row; min-width: 0; }
+html[data-folia-tv="true"] .tv-live-preview { min-height: 220px; height: clamp(220px, 34vh, 340px); margin-bottom: 16px; }
+.tv-preview-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (min-width: 1500px) { .tv-preview-choices { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tv-settings-sidebar { display: flex; flex-direction: column; gap: 8px; }
+html[data-folia-tv="true"] .tv-theme-layout { display: flex; min-height: 0; }
+html[data-folia-tv="true"] .tv-theme-editor { width: 100%; overflow: hidden; }
+html[data-folia-tv="true"] .tv-theme-editor > div {
+    display: flex; height: 100%; padding: 0; border: 0; background: none !important;
+}
+html[data-folia-tv="true"] .tv-theme-editor [data-tv-content] { flex: 1; overflow-y: auto; margin: 0; }
+/* No focus tween or heavy glass blur while navigating settings on a television GPU. */
+html[data-folia-tv="true"] [data-folia-tv-scope] * { backdrop-filter: none !important; }
+html[data-folia-tv="true"] [data-folia-tv-scope] button { transition-duration: 0s !important; }
+html[data-folia-tv="true"] [data-folia-tv-scope] input[type="range"] { min-height: 28px; }
+
+/* The enlarged card already communicates selection; a canvas outline only draws two screen-wide lines. */
+html[data-folia-tv="true"] [data-tv-native-navigation]:focus,
+html[data-folia-tv="true"] [data-tv-player-surface]:focus { outline: none !important; box-shadow: none !important; }
+.tv-transport { position: fixed; z-index: 10020; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; max-width: 80vw; padding: 8px; border-radius: 14px; background: #171923ee; color: white; }
+.tv-transport button { padding: 8px 18px; border-radius: 8px; min-height: 42px; }
+.tv-transport-return { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-folia-tv="true"]:has([data-tv-now-playing]) [data-folia-settings-overlay] { padding-bottom: 90px !important; }
+html[data-folia-tv="true"]:has([data-tv-now-playing]) .tv-visualizer-layout { padding-bottom: 90px; }
+
+html[data-folia-tv="true"]:has([data-folia-tv-scope="font-picker"]) .tv-transport,
+html[data-folia-tv="true"]:has([role="dialog"]) .tv-transport { display: none; }
+
+/* Dark fill and a two-tone ring remain legible over both light artwork and dark backgrounds. */
+html[data-folia-tv="true"] button:focus,
+html[data-folia-tv="true"] [role="button"]:focus,
+html[data-folia-tv="true"] input:not([type="range"]):focus,
+html[data-folia-tv="true"] textarea:focus,
+html[data-folia-tv="true"] select:focus { background-color: #172236 !important; color: #fff !important; }
+/* A native canvas owns keys, but only its current card gets the visible ring. */
+html[data-folia-tv="true"] [data-tv-native-navigation]:focus [data-tv-card-current="true"] {
+    outline: 4px solid var(--tv-focus-color) !important;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px #111827, 0 0 18px #ffe06680 !important;
+    border-radius: 16px;
+}
+
+.tv-transport { opacity: 1; visibility: visible; transition: opacity 180ms ease, visibility 0s; }
+.tv-transport[data-tv-hidden="true"] { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 180ms ease, visibility 0s linear 180ms; }
+
+.tv-transport-actions { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+.tv-transport button { white-space: nowrap; }
+.tv-transport-player { flex-direction: column; gap: 6px; width: min(640px, 85vw); }
+.tv-transport-progress { padding: 4px 14px 8px; }
+html[data-folia-tv="true"] [data-tv-progress] [data-folium-part="progress.root"]:focus-within {
+    outline: 4px solid var(--tv-focus-color); outline-offset: 4px; border-radius: 8px;
+    box-shadow: 0 0 0 3px #111827;
+}

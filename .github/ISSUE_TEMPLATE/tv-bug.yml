@@ -1,0 +1,33 @@
+name: 安卓电视遥控器问题
+description: 报告 TV 焦点、播放或兼容性问题
+title: "[TV] "
+body:
+  - type: markdown
+    attributes:
+      value: "请勿上传账号、Cookie、Token、二维码或包含家人面部的照片。漏洞请参阅 SECURITY.md 私下报告。"
+  - type: input
+    id: version
+    attributes:
+      label: Folia TV 版本
+      placeholder: 1.0.4
+    validations:
+      required: true
+  - type: textarea
+    id: device
+    attributes:
+      label: 安卓设备与遥控器
+      description: 盒子/电视型号、Android 和 WebView 版本；是否通过 HDMI-CEC 转发按键。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 按键复现步骤
+      description: 从哪个页面开始，依次按了什么键；当前焦点在哪里，预期到哪里，实际发生什么。
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 补充信息
+      description: 是否稳定复现、是否仅某种动画或某个音源，必要时附已脱敏日志或应用截图。

@@ -1,0 +1,105 @@
+{
+  "source": "Folia VisPlayground actual renderer screenshots",
+  "captured": [
+    {
+      "kind": "animation",
+      "id": "sonnet",
+      "file": "animation-sonnet.png"
+    },
+    {
+      "kind": "animation",
+      "id": "tempera",
+      "file": "animation-tempera.png"
+    },
+    {
+      "kind": "animation",
+      "id": "lumiere",
+      "file": "animation-lumiere.png"
+    },
+    {
+      "kind": "animation",
+      "id": "classic",
+      "file": "animation-classic.png"
+    },
+    {
+      "kind": "animation",
+      "id": "cadenza",
+      "file": "animation-cadenza.png"
+    },
+    {
+      "kind": "animation",
+      "id": "partita",
+      "file": "animation-partita.png"
+    },
+    {
+      "kind": "animation",
+      "id": "fume",
+      "file": "animation-fume.png"
+    },
+    {
+      "kind": "animation",
+      "id": "tilt",
+      "file": "animation-tilt.png"
+    },
+    {
+      "kind": "animation",
+      "id": "claddagh",
+      "file": "animation-claddagh.png"
+    },
+    {
+      "kind": "animation",
+      "id": "monet",
+      "file": "animation-monet.png"
+    },
+    {
+      "kind": "animation",
+      "id": "pendolo",
+      "file": "animation-pendolo.png"
+    },
+    {
+      "kind": "animation",
+      "id": "cappella",
+      "file": "animation-cappella.png"
+    },
+    {
+      "kind": "animation",
+      "id": "diorama",
+      "file": "animation-diorama.png"
+    },
+    {
+      "kind": "animation",
+      "id": "still",
+      "file": "animation-still.png"
+    },
+    {
+      "kind": "background",
+      "id": "common",
+      "file": "background-common.png"
+    },
+    {
+      "kind": "background",
+      "id": "monet",
+      "file": "background-monet.png"
+    },
+    {
+      "kind": "background",
+      "id": "nomand",
+      "file": "background-nomand.png"
+    },
+    {
+      "kind": "background",
+      "id": "latent",
+      "file": "background-latent.png"
+    },
+    {
+      "kind": "background",
+      "id": "url",
+      "file": "background-url.png"
+    },
+    {
+      "kind": "background",
+      "id": "sora",
+      "file": "background-sora.png"
+    }
+  ]
+}

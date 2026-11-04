@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Folia TV launcher banner: a leaf and music note on the app's dark background. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp" android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#151921" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#B7DAB8" android:pathData="M94,115C58,56 125,35 176,42C175,99 140,132 94,115Z" />
+    <path android:strokeColor="#151921" android:strokeWidth="5" android:pathData="M83,133L155,60" />
+    <path android:fillColor="#F0F4EA" android:pathData="M199,55h10v61c0,16 -28,20 -28,5c0,-9 11,-14 18,-11zM209,55l28,-7v13l-28,7z" />
+</vector>
