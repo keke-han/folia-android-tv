@@ -3,6 +3,7 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
+import { createConnection } from 'node:net';
 
 // 当前文件：在专用安卓测试设备上验证本地音频会话授权、Range 和 HEAD，使用自建静音音频。
 const adbPath = process.env.ADB_PATH || 'adb';
@@ -84,6 +85,20 @@ try {
     assert.equal(options.status, 204);
     const traversal = await fetch(origin + `${base.pathname}/audio/${encodeURIComponent('imported-../private.wav')}`);
     assert.equal(traversal.status, 404);
+    const slow = createConnection({ host: '127.0.0.1', port: audioPort });
+    slow.on('error', () => {});
+    await new Promise(resolve => slow.once('connect', resolve));
+    const started = Date.now();
+    slow.write('GET /');
+    const drip = setInterval(() => { if (!slow.destroyed) slow.write('x'); }, 200);
+    try {
+        await new Promise((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error('Slow header exceeded absolute deadline')), 7000);
+            slow.once('close', () => { clearTimeout(timer); resolve(); });
+        });
+        assert(Date.now() - started < 6500, 'Slow request deadline not enforced');
+    } finally { clearInterval(drip); slow.destroy(); }
+    console.log('PASS: slow unauthenticated request closed by absolute deadline.');
     console.log('PASS: 15 unauthorized GET/HEAD/OPTIONS routes rejected; authorized GET/HEAD/Range/OPTIONS and traversal checks passed.');
 } finally {
     try { adb('shell', 'run-as', pkg, 'rm', '-f', `files/imported-audio/${fixtureName}`); } catch {}

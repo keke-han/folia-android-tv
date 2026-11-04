@@ -52,6 +52,9 @@ public class MainActivity extends BridgeActivity {
         );
         installWebViewRendererGuard();
         WebView webView = getBridge().getWebView();
+        // 业务只使用 FoliaNative 桥，移除可被任意子 frame 调用的内置接口。
+        webView.removeJavascriptInterface("CapacitorCookiesAndroidInterface");
+        webView.removeJavascriptInterface("CapacitorHttpAndroidInterface");
         WebSettings settings = webView.getSettings();
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);

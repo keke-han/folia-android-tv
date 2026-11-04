@@ -89,6 +89,7 @@ public class FoliaNativePlugin extends Plugin {
     private static volatile long playbackArtworkAt = 0;
     private static volatile boolean playbackArtworkApplied = false;
     private final OkHttpClient client = new OkHttpClient.Builder()
+        .callTimeout(60, TimeUnit.SECONDS)
         .connectTimeout(20, TimeUnit.SECONDS)
         .readTimeout(45, TimeUnit.SECONDS)
         .writeTimeout(45, TimeUnit.SECONDS)
@@ -314,14 +315,7 @@ public class FoliaNativePlugin extends Plugin {
                     }
                 }
             }
-            // OkHttp has no cookie jar here, so carry the WebView cookie store
-            // ourselves unless the caller injected an explicit Cookie header.
-            if (headers == null || headers.optString("cookie") == null) {
-                String storedCookies = CookieManager.getInstance().getCookie(url);
-                if (storedCookies != null && !storedCookies.isEmpty()) {
-                    builder.header("Cookie", storedCookies);
-                }
-            }
+            // CookieManager is read per network hop; do not freeze an automatic Cookie into the initial request.
 
             RequestBody body = null;
             if (bodyBase64 != null && !bodyBase64.isEmpty()) {
@@ -365,13 +359,21 @@ public class FoliaNativePlugin extends Plugin {
             Integer timeoutMs = call.getInt("timeoutMs");
             if (timeoutMs != null && timeoutMs > 0) {
                 requestClient = requestClient.newBuilder()
+                    .callTimeout(timeoutMs, TimeUnit.MILLISECONDS)
                     .readTimeout(timeoutMs, TimeUnit.MILLISECONDS)
                     .writeTimeout(timeoutMs, TimeUnit.MILLISECONDS)
                     .build();
             }
 
-            String requestUrl = url;
-            try (Response response = requestClient.newCall(builder.build()).execute()) {
+            Request initialRequest = builder.build();
+            requestClient = requestClient.newBuilder().addNetworkInterceptor(chain -> {
+                Request hop = chain.request();
+                String cookies = CookieManager.getInstance().getCookie(hop.url().toString());
+                Response hopResponse = chain.proceed(NativeRequestPolicy.cookiesForHop(initialRequest, hop, cookies));
+                storeResponseCookies(hopResponse.request().url().toString(), hopResponse);
+                return hopResponse;
+            }).build();
+            try (Response response = requestClient.newCall(initialRequest).execute()) {
                 // Preserve repeated headers (Set-Cookie) by handing JS an array
                 // instead of an object, which would collapse duplicates.
                 JSArray responseHeaders = new JSArray();
@@ -383,9 +385,8 @@ public class FoliaNativePlugin extends Plugin {
                         responseHeaders.put(headerEntry);
                     }
                 }
-                storeResponseCookies(requestUrl, response);
                 ResponseBody responseBody = response.body();
-                byte[] bytes = responseBody == null ? new byte[0] : responseBody.bytes();
+                byte[] bytes = responseBody == null ? new byte[0] : ArtworkLimits.read(responseBody.byteStream(), 8 * 1024 * 1024);
                 JSObject result = new JSObject();
                 result.put("status", response.code());
                 result.put("headers", responseHeaders);

@@ -22,10 +22,13 @@ import android.os.SystemClock;
 import androidx.annotation.Nullable;
 
 import java.io.InputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import android.util.LruCache;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -41,9 +44,11 @@ public class FoliaPlaybackService extends Service {
     private static final int NOTIFICATION_ID = 31009;
     public static final String ACTION_REFRESH_METADATA = "top.izuna.foliamajor.action.REFRESH_METADATA";
     private MediaSession mediaSession;
-    private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
-    private final OkHttpClient artworkClient = new OkHttpClient();
-    private final Map<String, Bitmap> artworkCache = new ConcurrentHashMap<>();
+    private final ExecutorService artworkExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(2), new ThreadPoolExecutor.DiscardOldestPolicy());
+    private final OkHttpClient artworkClient = new OkHttpClient.Builder().callTimeout(20, TimeUnit.SECONDS).build();
+    private final LruCache<String, Bitmap> artworkCache = new LruCache<String, Bitmap>(8 * 1024 * 1024) {
+        @Override protected int sizeOf(String key, Bitmap bitmap) { return bitmap.getAllocationByteCount(); }
+    };
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private volatile String currentArtworkUrl = "";
     private volatile String appliedArtworkUrl = "";
@@ -369,12 +374,21 @@ public class FoliaPlaybackService extends Service {
                 ResponseBody body = response.body();
                 if (response.isSuccessful() && body != null) {
                     try (InputStream input = body.byteStream()) {
-                        bitmap = BitmapFactory.decodeStream(input);
+                        byte[] bytes = ArtworkLimits.read(input);
+                        BitmapFactory.Options bounds = new BitmapFactory.Options();
+                        bounds.inJustDecodeBounds = true;
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, bounds);
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = ArtworkLimits.sampleSize(bounds.outWidth, bounds.outHeight);
+                        bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
                     }
                     if (bitmap == null) failure = "decode-failed";
                 } else {
                     failure = "http-" + response.code();
                 }
+            } catch (OutOfMemoryError memory) {
+                artworkCache.evictAll();
+                failure = "artwork-memory-pressure";
             } catch (Exception error) {
                 failure = error.getClass().getSimpleName();
             }
@@ -498,6 +512,7 @@ public class FoliaPlaybackService extends Service {
         mainHandler.removeCallbacks(serviceHeartbeatRunnable);
         updatePlaybackLocks(false);
         artworkExecutor.shutdownNow();
+        artworkCache.evictAll();
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();

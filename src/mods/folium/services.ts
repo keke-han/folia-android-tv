@@ -1,3 +1,4 @@
+import { nativeFrameSandbox } from '../../utils/nativeFramePolicy';
 import type { ModRuntimeInfo } from '../types';
 import { homeTabsRegistry, selectFoliumHomeTab } from './registries/homeTabs';
 import { invokeModNetFetch, invokeModPickFile, invokeModReleaseFile, invokeModRestoreFile } from '../ipc';
@@ -190,7 +191,7 @@ const createEmbed = (
     const frame = document.createElement('iframe');
     frame.src = parsed.toString();
     frame.title = options.title ?? parsed.hostname;
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-forms');
+    frame.setAttribute('sandbox', nativeFrameSandbox('allow-scripts allow-same-origin allow-presentation allow-forms'));
     frame.setAttribute('allow', (options.allow ?? DEFAULT_EMBED_ALLOW).join('; '));
     frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
     frame.style.cssText = 'border:0;width:100%;height:100%;display:block;';

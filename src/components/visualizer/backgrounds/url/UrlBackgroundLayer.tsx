@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import type { UrlBackgroundItem } from '../../../../types';
 import { sanitizeUrlBackgroundItem } from '../../../../utils/urlBackground';
+import { nativeFrameSandbox } from '../../../../utils/nativeFramePolicy';
 
 // src/components/visualizer/backgrounds/url/UrlBackgroundLayer.tsx
 // Renders a webpage as background via iframe.
@@ -70,7 +71,7 @@ const UrlBackgroundLayer: React.FC<UrlBackgroundLayerProps> = ({
                     style={{
                         pointerEvents: 'none',
                     }}
-                    sandbox="allow-scripts"
+                    sandbox={nativeFrameSandbox('allow-scripts')}
                     allowFullScreen
                 />
             )}

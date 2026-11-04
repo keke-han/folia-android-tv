@@ -30,6 +30,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledFuture;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -77,6 +79,7 @@ final class LocalAudioServer {
     private final Map<String, String> remoteAudioUrls = new LinkedHashMap<>();
     /** 转发时要额外带上的请求头（按 token 存）；没有时为 null，见 {@link #registerRemoteAudio}。 */
     private final Map<String, Map<String, String>> remoteAudioHeaders = new LinkedHashMap<>();
+    private final ScheduledThreadPoolExecutor headerDeadlines = new ScheduledThreadPoolExecutor(1);
     private ServerSocket serverSocket;
     private int port;
 
@@ -90,14 +93,19 @@ final class LocalAudioServer {
         // 而每次启动拿到的端口都可能不同，所以 URL 不能持久化，播放前要重新拼（见插件的 localAudioServerPort）。
         serverSocket = new ServerSocket(0, 50, InetAddress.getByName("127.0.0.1"));
         port = serverSocket.getLocalPort();
-        executor.execute(() -> {
+        headerDeadlines.setRemoveOnCancelPolicy(true);
+        Thread acceptThread = new Thread(() -> {
             while (!serverSocket.isClosed()) {
                 try {
                     Socket socket = serverSocket.accept();
                     socket.setSoTimeout(5000);
+                    ScheduledFuture<?> deadline = headerDeadlines.schedule(() -> {
+                        try { socket.close(); } catch (IOException ignored) {}
+                    }, 5, TimeUnit.SECONDS);
                     try {
-                        executor.execute(() -> handle(socket));
+                        executor.execute(() -> handle(socket, deadline));
                     } catch (RejectedExecutionException busy) {
+                        deadline.cancel(false);
                         socket.close();
                     }
                 } catch (IOException ignored) {
@@ -105,7 +113,9 @@ final class LocalAudioServer {
                     break;
                 }
             }
-        });
+        }, "folia-audio-accept");
+        acceptThread.setDaemon(true);
+        acceptThread.start();
         return port;
     }
 
@@ -192,7 +202,7 @@ final class LocalAudioServer {
         return dir;
     }
 
-    private void handle(Socket socket) {
+    private void handle(Socket socket, ScheduledFuture<?> deadline) {
         try (Socket client = socket;
              BufferedInputStream input = new BufferedInputStream(client.getInputStream());
              BufferedOutputStream output = new BufferedOutputStream(client.getOutputStream())) {
@@ -200,6 +210,15 @@ final class LocalAudioServer {
             if (requestLine == null) return;
             String[] requestParts = requestLine.split(" ");
             if (requestParts.length < 2) return;
+
+            String path = requestParts[1];
+            int query = path.indexOf('?');
+            if (query >= 0) path = path.substring(0, query);
+            path = access.authorizedRoute(path);
+            if (path == null) {
+                writeStatus(output, 403, "Forbidden");
+                return;
+            }
 
             Map<String, String> headers = new HashMap<>();
             String line;
@@ -215,14 +234,7 @@ final class LocalAudioServer {
                 }
             }
 
-            String path = requestParts[1];
-            int query = path.indexOf('?');
-            if (query >= 0) path = path.substring(0, query);
-            path = access.authorizedRoute(path);
-            if (path == null) {
-                writeStatus(output, 403, "Forbidden");
-                return;
-            }
+            deadline.cancel(false);
             if (!("GET".equals(requestParts[0]) || "HEAD".equals(requestParts[0]) || "OPTIONS".equals(requestParts[0]))) {
                 writeStatus(output, 405, "Method Not Allowed");
                 return;
@@ -283,6 +295,8 @@ final class LocalAudioServer {
             // 顺带进崩溃诊断：诊断报告里能直接读到 local-audio-server 这条，
             // 不用再让用户去捞 logcat。
             CrashDiagnostics.record(context, "local-audio-server", "server", error);
+        } finally {
+            deadline.cancel(false);
         }
     }
 
