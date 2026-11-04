@@ -8,7 +8,7 @@
     "email": "chthollyphile@users.noreply.github.com"
   },
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "AGPL-3.0",
   "type": "module",
   "engines": {
@@ -126,7 +126,12 @@
     },
     "get-uri": {
       "basic-ftp": "6.2.5"
-    }
+    },
+    "workbox-build": {
+      "@trickfilm400/rollup-plugin-off-main-thread": "4.0.0"
+    },
+    "deepmerge": "file:./vendor/deepmerge",
+    "glob": "14.0.3"
   },
   "repository": {
     "type": "git",

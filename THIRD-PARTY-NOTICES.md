@@ -48,3 +48,7 @@ App 中播放、展示的在线音乐音频、歌词、专辑封面等内容的�
 
 本 fork 与上游作者无关，也不代表上游项目的立场或观点。
 原始文档保留于 README_UPSTREAM.md。代码许可按根目录 AGPL-3.0 原文执行，本 TV 分支不附加禁止商用等额外限制；音乐内容和第三方服务另受其权利及条款约束。
+
+## 6. TV 构建链的本地安全修订
+
+`vendor/deepmerge/` 来自 TehShrike/deepmerge 4.3.1 的 CommonJS 分发文件，原作者为 James Halliday、Josh Duff 及其他贡献者，使用 MIT 许可，完整原文保存在该目录的 LICENSE。本分支修订为 4.3.1-tv.1：目标复制和来源合并均拒绝原型危险键，以修复 GHSA-gcqx-w48m-w2h4。它不是上游官方修复版，仅用于构建工具依赖；修订说明和回归测试位置见该目录 README。
