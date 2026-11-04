@@ -8,6 +8,24 @@
 
 [遥控器与构建详解](ANDROID_TV.md) · [版本记录](CHANGELOG.md) · [安全与隐私](SECURITY.md) · [第三方许可](THIRD-PARTY-NOTICES.md) · [保留的上游 README](README_UPSTREAM.md)
 
+## 界面预览
+
+以下为 1.0.6 电视布局的实际界面示例，使用演示歌单、原创示例歌词与抽象封面，在浏览器电视模式中截取。点击图片可查看原图。
+
+**全屏歌词播放**：保留主画面原文歌词，播放控制栏闲置后淡出。
+
+![Folia TV 全屏歌词播放示例](docs/screenshots/tv-player.png)
+
+| 遥控器播放控制 | 曲库与歌单选择 |
+|---|---|
+| [![上下键唤出播放栏，黄色焦点框突出当前按钮](docs/screenshots/tv-controls.png)](docs/screenshots/tv-controls.png) | [![曲库中间卡片放大，黄色焦点框清楚标记当前选择](docs/screenshots/tv-library.png)](docs/screenshots/tv-library.png) |
+| 上下键唤出控制栏，确认暂停或继续；主画面短按左右切歌。 | 方向键选择卡片，确认打开；长按下键返回正在播放。 |
+
+| 歌词动画与实时预览 | 背景缩略图与选择 |
+|---|---|
+| [![歌词设置左侧分类、右侧动画缩略图和实时预览](docs/screenshots/tv-animation-settings.png)](docs/screenshots/tv-animation-settings.png) | [![六种背景的效果缩略图与遥控器焦点](docs/screenshots/tv-background-settings.png)](docs/screenshots/tv-background-settings.png) |
+| 分类放在左侧，参数与效果图在右侧，焦点随遥控器移动。 | 背景保留效果示例，选项随焦点滚动到可见位置。 |
+
 ## 遥控器怎么用
 
 | 场景 | 按键 | 操作 |
