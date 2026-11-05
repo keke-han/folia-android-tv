@@ -134,6 +134,7 @@ exports[`store contract > keeps every localStorage key the stores read or write 
   "show_subtitle_translation",
   "sleep_timer_hours",
   "sleep_timer_minutes",
+  "soft_cover_tuning",
   "sonnet_tuning",
   "sora_background_tuning",
   "stage_track_pill_mode",
