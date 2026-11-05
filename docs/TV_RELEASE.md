@@ -4,7 +4,7 @@
 
 代码遵循根目录 AGPL-3.0；保留 LICENSE、THIRD-PARTY-NOTICES.md、CONTRIBUTORS.md 和上游来源。Release 应包含版本说明、测试范围、已知限制、APK 的 SHA-256，以及与该 APK 对应的源码提交/标签。
 
-当前 1.0.6 是电视测试版本，尚不宣称适配所有品牌。网页、桌面、Docker 等继承模块保留用于上游结构兼容，不代表本分支为这些平台独立发布安装包。
+当前 1.0.8 是电视测试版本，尚不宣称适配所有品牌。网页、桌面、Docker 等继承模块保留用于上游结构兼容，不代表本分支为这些平台独立发布安装包。
 
 ## 构建
 
@@ -28,11 +28,11 @@ cd android
 
 调试输出为 `android/app/build/outputs/apk/debug/app-debug.apk`。公开 Release 包应使用受控的正式签名；现有工程支持本地 `android/keystore.properties`（模板见 `android/keystore.properties.example`），配置后以 `-PfoliaTv :app:assembleRelease` 构建。先完成相同 TV 环境变量的网页构建与 Capacitor 同步。绝不提交 properties 实值或 keystore。
 
-当前已交付的 1.0.4 使用本地调试证书。改用正式证书会影响覆盖更新，应先明确迁移与备份方案；不能将“使用正式证书”说成仍能直接覆盖旧调试包。CI 的临时调试签名用于构建验证，不作为已有用户的升级签名。
+当前已交付的 TV 测试包沿用同一本地调试证书。改用正式证书会影响覆盖更新，应先明确迁移与备份方案；不能将“使用正式证书”说成仍能直接覆盖旧调试包。CI 的临时调试签名用于构建验证，不作为已有用户的升级签名。
 
 ## 版本规则
 
-`package.json` 的 version 决定 versionName；`android/app/build.gradle` 的 versionCode 必须逐包递增。当前为 1.0.6 / 240。同名版本若重发不同 APK，也应提高 versionCode 并在说明中明确，避免用户混淆。
+`package.json` 的 version 决定 versionName；`android/app/build.gradle` 的 versionCode 必须逐包递增。当前为 1.0.8 / 242。同名版本若重发不同 APK，也应提高 versionCode 并在说明中明确，避免用户混淆。
 
 ## 源码来源记录
 
@@ -82,3 +82,12 @@ ADB_PATH=/path/to/adb ANDROID_SERIAL=emulator-5580 node dev/tv/verifyNativeAudio
 已对安卓原生非二进制源码及其WebView边界做独立审查，并对修复做复核；不将其扩大成上游所有PC功能的逐行审计。
 
 API 33 专用模拟器补充实测通过：同源302轮换Cookie、跨origin不携带来源Cookie、响应Cookie归属真实目标；配置中的网页背景可以显示静态内容但不执行脚本，两个未使用内置接口不可见；超大封面拒绝后进程仍存活，正常PNG封面仍可解码；慢请求持续发送数据也会在绝对期限内关闭。
+
+## 1.0.8 发布核对（2026-11-05）
+
+- 新增完整封面柔光与自定义图片；通用、莫奈和漫游使用完整适配。柔光默认封面模糊为 1px，底层柔化图为 12px；压暗、渐隐和遥控器行为保留。
+- 类型检查及 172 项定向单测通过；19 项电视设置 UI 回归通过，清晰度调整后另外复测封面边界、保存与实际滤镜，并更新效果缩略图。
+- 用户在电视上确认本轮清晰度后，发布同一份 1.0.8 APK，未为发布重新构建或替换该文件。包名 `top.izuna.foliamajor.tv`、versionCode 242，签名与 1.0.7 和 1.0.6 一致。
+- APK SHA-256：`465dc54340a4aaa85bce16205d4c055f4c5e2f0f0b0b2bfc28ce9fe6d660ec5b`。
+- 对应功能源码以 `v1.0.8` 标签提供。此 APK 在提交发布前构建，应用内构建标识仍来自当时的 Git 基线与本地修改状态；该标识不作为本次完整功能源码的唯一定位方式。
+- 本次不涉及新增原生权限、原生接口或第三方依赖。1.0.6 的原生专项审查记录保留；不将本次 UI 检查描述为重新完成全部安全审计。

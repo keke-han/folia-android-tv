@@ -73,6 +73,21 @@
     },
     {
       "kind": "background",
+      "id": "latent",
+      "file": "background-latent.png"
+    },
+    {
+      "kind": "background",
+      "id": "url",
+      "file": "background-url.png"
+    },
+    {
+      "kind": "background",
+      "id": "sora",
+      "file": "background-sora.png"
+    },
+    {
+      "kind": "background",
       "id": "common",
       "file": "background-common.png"
     },
@@ -88,18 +103,8 @@
     },
     {
       "kind": "background",
-      "id": "latent",
-      "file": "background-latent.png"
-    },
-    {
-      "kind": "background",
-      "id": "url",
-      "file": "background-url.png"
-    },
-    {
-      "kind": "background",
-      "id": "sora",
-      "file": "background-sora.png"
+      "id": "soft-cover",
+      "file": "background-soft-cover.png"
     }
   ]
 }

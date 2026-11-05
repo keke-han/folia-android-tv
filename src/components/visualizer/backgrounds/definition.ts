@@ -1,4 +1,5 @@
 import React from 'react';
+import type { SoftCoverTuning } from '../../../types/softCover';
 import type { MotionValue } from 'framer-motion';
 import type {
     AudioBands,
@@ -17,6 +18,7 @@ import type {
 
 export interface VisualizerBackgroundConfig {
     mode?: VisualizerBackgroundMode | null;
+    softCover?: { tuning?: SoftCoverTuning };
     transparent?: boolean;
     common?: {
         useCoverColorBg?: boolean;

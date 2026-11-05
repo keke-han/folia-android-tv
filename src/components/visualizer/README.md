@@ -58,6 +58,7 @@ App / ThemePark / VisPlayground / OBS source
 - `common`：`FluidBackground.tsx`、`GeometricBackground.tsx`，带 `CommonBackgroundSettingsCard.tsx`
 - `latent`：`LatentBackground.tsx`、设置卡
 - `monet`：`MonetBackgroundLayer.tsx`、设置卡
+- `soft-cover`：完整封面柔光，`SoftCoverBackground.tsx`、`SoftCoverSettings.tsx`；独立参数由 `useSoftCoverSettingsStore` 保存，并进入外观配置与同步
 - `nomand`：`NomandBackgroundLayer.tsx`、设置卡
 - `sora`：`SoraBackground.tsx`
 - `url`：`UrlBackgroundLayer.tsx`、设置卡

@@ -85,7 +85,8 @@ const resolveCanvasImageDimension = (
     return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 };
 
-const drawCoverCropped = (
+// Preserve every edge of square, portrait and landscape artwork before post-processing.
+export const drawCoverContained = (
     context: CanvasRenderingContext2D,
     image: CanvasImageSource,
     width: number,
@@ -97,7 +98,7 @@ const drawCoverCropped = (
         return;
     }
 
-    const scale = Math.max(width / imageWidth, height / imageHeight);
+    const scale = Math.min(width / imageWidth, height / imageHeight) * 0.92;
     const drawWidth = imageWidth * scale;
     const drawHeight = imageHeight * scale;
     const offsetX = (width - drawWidth) / 2;
@@ -350,7 +351,7 @@ export const buildMonetBackgroundDataUrl = async ({
     if (checkCanvasFilterSupport()) {
         context.filter = `blur(${clamp(tuning.backgroundBlurPx, 0, 60)}px)`;
     }
-    drawCoverCropped(context, image, canvas.width, canvas.height);
+    drawCoverContained(context, image, canvas.width, canvas.height);
     context.restore();
 
     applyBackgroundPostProcessing(context, canvas.width, canvas.height, theme, tuning);

@@ -116,6 +116,7 @@ const FIELD_GROUPS: Record<string, ImportGroup> = {
     // Static mode is presented under background rather than visualizer: what it actually does is
     // drop the geometric background to save resources, which is how the settings panel describes it.
     staticMode: 'background',
+    softCoverTuning: 'background',
     monetBackgroundTuning: 'background',
     nomandBackgroundTuning: 'background',
     latentBackgroundTuning: 'background',
@@ -173,6 +174,7 @@ const TRUTHY_GUARDED_FIELDS = new Set([
     'sonnetTuning',
     'temperaTuning',
     'lumiereTuning',
+    'softCoverTuning',
     'monetBackgroundTuning',
     'nomandBackgroundTuning',
     'latentBackgroundTuning',

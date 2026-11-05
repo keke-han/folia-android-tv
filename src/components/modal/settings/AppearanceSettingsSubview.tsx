@@ -1,3 +1,4 @@
+import { useSoftCoverSettingsStore } from '../../../stores/useSoftCoverSettingsStore';
 import React, { useState } from 'react';
 import { Monitor, Palette, Settings2, LayoutGrid, PanelsTopLeft, Images, Download, Copy, Check, ChevronRight, AlertTriangle, KeyRound, Music2, Film } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -530,6 +531,9 @@ const AppearanceSettingsSubview: React.FC<AppearanceSettingsSubviewProps> = ({
                 if (has('lumiereTuning') && config.lumiereTuning) storeVisualizer.handleSetLumiereTuning(config.lumiereTuning);
             }
 
+            if (has('softCoverTuning') && config.softCoverTuning) {
+                useSoftCoverSettingsStore.getState().update(config.softCoverTuning);
+            }
             if (has('monetBackgroundTuning') && config.monetBackgroundTuning) {
                 storeVisualizer.handleSetMonetBackgroundTuning(config.monetBackgroundTuning);
             }

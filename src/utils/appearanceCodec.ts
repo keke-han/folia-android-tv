@@ -1,3 +1,4 @@
+import { normalizeSoftCoverTuning } from '../types/softCover';
 import {
     DEFAULT_CLADDAGH_TUNING,
     DEFAULT_DIORAMA_TUNING,
@@ -540,6 +541,7 @@ export const compressConfig = (config: any): string => {
     if (config.cappellaTuning) minified.cpt = compressCappella(config.cappellaTuning);
     if (config.tiltTuning) minified.tt = compressTilt(config.tiltTuning);
     if (config.dioramaTuning) minified.dot = compressDiorama(config.dioramaTuning);
+    if (config.softCoverTuning) minified.sct = normalizeSoftCoverTuning(config.softCoverTuning);
     if (config.monetBackgroundTuning) minified.mbt = compressMonetBackground(config.monetBackgroundTuning);
     if (config.nomandBackgroundTuning) minified.nbt = compressNomandBackground(config.nomandBackgroundTuning);
     if (config.latentBackgroundTuning) minified.lbt = compressLatentBackground(config.latentBackgroundTuning);
@@ -678,6 +680,7 @@ export const decompressConfig = (str: string): any => {
         if (parsed.cpt) decompressed.cappellaTuning = decompressCappella(parsed.cpt);
         if (parsed.tt) decompressed.tiltTuning = decompressTilt(parsed.tt);
         if (parsed.dot) decompressed.dioramaTuning = decompressDiorama(parsed.dot);
+        if (parsed.sct) decompressed.softCoverTuning = normalizeSoftCoverTuning(parsed.sct);
         if (parsed.mbt) decompressed.monetBackgroundTuning = decompressMonetBackground(parsed.mbt);
         if (parsed.nbt) decompressed.nomandBackgroundTuning = decompressNomandBackground(parsed.nbt);
         if (parsed.lbt) decompressed.latentBackgroundTuning = decompressLatentBackground(parsed.lbt);
@@ -715,7 +718,7 @@ export const decompressConfig = (str: string): any => {
             'subtitleFontInheritsLyrics', 'subtitleFontScale', 'subtitleFontStyle', 'subtitleFontWeight', 'subtitleFontFamily',
             'subtitleFontFallbackFamilies', 'visualizerTunings', 'classicTuning',
             'cadenzaTuning', 'partitaTuning', 'fumeTuning', 'claddaghTuning', 'cappellaTuning',
-            'tiltTuning', 'dioramaTuning', 'monetBackgroundTuning', 'nomandBackgroundTuning', 'latentBackgroundTuning', 'soraBackgroundTuning', 'monetTuning',
+            'softCoverTuning', 'tiltTuning', 'dioramaTuning', 'monetBackgroundTuning', 'nomandBackgroundTuning', 'latentBackgroundTuning', 'soraBackgroundTuning', 'monetTuning',
             'pendoloTuning', 'sonnetTuning', 'temperaTuning', 'lumiereTuning', 'foliumParams',
             'urlBackgroundList', 'urlBackgroundSelectedId',
             'songThemeAutoSwitchEnabled', 'songThemeAutoGenerateEnabled', 'themeGenerationSource', 'followSystemTheme',

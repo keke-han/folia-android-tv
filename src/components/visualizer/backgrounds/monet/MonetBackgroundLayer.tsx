@@ -19,6 +19,12 @@ interface MonetBackgroundLayerProps {
 }
 
 const PIPELINE_DEBOUNCE_MS = 180;
+// Blend the contained bitmap's matte into the full-screen palette instead of showing a panel edge.
+const containedImageFade: React.CSSProperties = {
+    maskImage: 'linear-gradient(90deg, transparent, black 6%, black 94%, transparent), linear-gradient(transparent, black 6%, black 94%, transparent)',
+    WebkitMaskImage: 'linear-gradient(90deg, transparent, black 6%, black 94%, transparent), linear-gradient(transparent, black 6%, black 94%, transparent)',
+    maskComposite: 'intersect', WebkitMaskComposite: 'source-in',
+};
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -143,7 +149,7 @@ const MonetBackgroundLayer: React.FC<MonetBackgroundLayerProps> = ({
         return {
             filter: `blur(${blurValue}px)`,
             WebkitFilter: `blur(${blurValue}px)`,
-            transform: 'scale(1.1) translateZ(0)',
+            transform: 'translateZ(0)',
         };
     }, [blurValue]);
 
@@ -159,8 +165,8 @@ const MonetBackgroundLayer: React.FC<MonetBackgroundLayerProps> = ({
 
     if (tuning.backgroundLayout === 'full-overlay') {
         return (
-            <div className="absolute inset-0 z-0 overflow-hidden">
-                <div ref={driftRef} className="absolute inset-0" style={driftStyle}>
+            <div className="absolute inset-0 z-0 overflow-hidden" style={{ backgroundColor: theme.backgroundColor }}>
+                <div ref={driftRef} className={driftEnabled ? "absolute inset-[10%]" : "absolute inset-0"} style={driftStyle}>
                     <AnimatePresence initial={false}>
                         <motion.div
                             key={pipelineUrl || sourceUrl || 'fallback'}
@@ -172,8 +178,10 @@ const MonetBackgroundLayer: React.FC<MonetBackgroundLayerProps> = ({
                             style={{
                                 backgroundColor: theme.backgroundColor,
                                 backgroundImage: resolvedBackgroundImage,
-                                backgroundSize: 'cover',
+                                backgroundSize: 'contain',
+                                backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center',
+                                ...containedImageFade,
                                 ...blurStyle,
                             }}
                         />
@@ -192,7 +200,7 @@ const MonetBackgroundLayer: React.FC<MonetBackgroundLayerProps> = ({
     const imagePositionX = clamp(50 + tuning.backgroundHalfPaneOffsetX, 10, 90);
 
     return (
-        <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 z-0 overflow-hidden" style={{ backgroundColor: theme.backgroundColor }}>
             <div
                 className="absolute inset-0"
                 style={{
@@ -209,7 +217,7 @@ const MonetBackgroundLayer: React.FC<MonetBackgroundLayerProps> = ({
                             maskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.94) 48%, rgba(0,0,0,0.46) 74%, rgba(0,0,0,0) 100%)',
                         }}
                     >
-                        <div ref={driftRef} className="absolute inset-0" style={driftStyle}>
+                        <div ref={driftRef} className={driftEnabled ? "absolute inset-[10%]" : "absolute inset-0"} style={driftStyle}>
                             <motion.div
                                 key={pipelineUrl || sourceUrl || 'fallback'}
                                 initial={{ opacity: 0 }}
@@ -219,9 +227,10 @@ const MonetBackgroundLayer: React.FC<MonetBackgroundLayerProps> = ({
                                 className="absolute inset-0"
                                 style={{
                                     backgroundImage: resolvedBackgroundImage,
+                                    backgroundSize: 'contain',
                                     backgroundRepeat: 'no-repeat',
-                                    backgroundSize: 'cover',
                                     backgroundPosition: `${imagePositionX}% center`,
+                                    ...containedImageFade,
                                     ...blurStyle,
                                 }}
                             />

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useSoftCoverSettingsStore } from '../../stores/useSoftCoverSettingsStore';
 import { useShallow } from 'zustand/react/shallow';
 import type { VisualizerBackgroundConfig } from './backgrounds/definition';
 import { useVisualizerSettingsStore } from '../../stores/useVisualizerSettingsStore';
@@ -24,12 +25,14 @@ export const useVisualizerBackgroundConfig = (): VisualizerBackgroundConfig => {
         urlBackgroundList: state.urlBackgroundList,
         urlBackgroundSelectedId: state.urlBackgroundSelectedId,
     })));
+    const softCoverTuning = useSoftCoverSettingsStore(state => state.tuning);
     const monetBackgroundImage = useVisualizerAssetStore(state => state.monetBackgroundImage);
     // Cover-derived tinting is a theme preference, not a visualizer one.
     const useCoverColorBg = useThemeSettingsStore(state => state.useCoverColorBg);
 
     return useMemo(() => ({
         mode: settings.mode,
+        softCover: { tuning: softCoverTuning },
         common: {
             useCoverColorBg,
             opacity: settings.opacity,
@@ -45,5 +48,5 @@ export const useVisualizerBackgroundConfig = (): VisualizerBackgroundConfig => {
             items: settings.urlBackgroundList,
             selectedId: settings.urlBackgroundSelectedId,
         },
-    }), [settings, monetBackgroundImage, useCoverColorBg]);
+    }), [settings, monetBackgroundImage, useCoverColorBg, softCoverTuning]);
 };

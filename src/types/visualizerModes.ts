@@ -31,6 +31,7 @@ export const BUILTIN_VISUALIZER_MODES = [
 
 export const BUILTIN_VISUALIZER_BACKGROUND_MODES = [
     'common',
+    'soft-cover',
     'latent',
     'monet',
     'nomand',

@@ -52,23 +52,14 @@ const buildSoftFocusCover = (coverUrl: string): Promise<string | null> => new Pr
 
             const naturalWidth = img.naturalWidth || img.width;
             const naturalHeight = img.naturalHeight || img.height;
-            const squareSize = Math.min(naturalWidth, naturalHeight);
-            const sx = Math.max(0, (naturalWidth - squareSize) / 2);
-            const sy = Math.max(0, (naturalHeight - squareSize) / 2);
-
+            const fit = Math.min(IOS_SOFT_FOCUS_SAMPLE_SIZE / naturalWidth, IOS_SOFT_FOCUS_SAMPLE_SIZE / naturalHeight);
             sourceCtx.imageSmoothingEnabled = true;
             sourceCtx.imageSmoothingQuality = 'high';
-            sourceCtx.drawImage(
-                img,
-                sx,
-                sy,
-                squareSize,
-                squareSize,
-                0,
-                0,
-                IOS_SOFT_FOCUS_SAMPLE_SIZE,
-                IOS_SOFT_FOCUS_SAMPLE_SIZE
-            );
+            sourceCtx.drawImage(img,
+                (IOS_SOFT_FOCUS_SAMPLE_SIZE - naturalWidth * fit) / 2,
+                (IOS_SOFT_FOCUS_SAMPLE_SIZE - naturalHeight * fit) / 2,
+                naturalWidth * fit, naturalHeight * fit);
+
 
             outputCtx.imageSmoothingEnabled = true;
             outputCtx.imageSmoothingQuality = 'high';
@@ -229,7 +220,7 @@ const FluidBackground: React.FC<FluidBackgroundProps> = memo(({ coverUrl, theme 
     const coverLayerStyle = useMemo<React.CSSProperties>(() => {
         if (isIOSSafari) {
             return {
-                transform: `scale(${isSoftFocusReady ? 1.28 : 1.2}) translateZ(0)`,
+                transform: 'translateZ(0)',
                 opacity: isSoftFocusReady ? 0.94 : 0.3,
                 willChange: 'transform, opacity',
                 backfaceVisibility: 'hidden',
@@ -239,7 +230,7 @@ const FluidBackground: React.FC<FluidBackgroundProps> = memo(({ coverUrl, theme 
 
         return {
             filter: 'blur(40px)',
-            transform: 'scale(1.5) translateZ(0)',
+            transform: 'translateZ(0)',
             opacity: 1,
             willChange: 'transform, opacity, filter',
             backfaceVisibility: 'hidden',
@@ -266,7 +257,7 @@ const FluidBackground: React.FC<FluidBackgroundProps> = memo(({ coverUrl, theme 
                             aria-hidden="true"
                             draggable={false}
                             decoding="async"
-                            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-out"
+                            className="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 ease-out"
                             style={coverLayerStyle}
                         />
                     ) : (
@@ -302,7 +293,7 @@ const FluidBackground: React.FC<FluidBackgroundProps> = memo(({ coverUrl, theme 
                                         aria-hidden="true"
                                         draggable={false}
                                         decoding="async"
-                                        className="absolute inset-0 w-full h-full object-cover"
+                                        className="absolute inset-0 w-full h-full object-contain"
                                         style={coverLayerStyle}
                                         ref={(el) => {
                                             // layer.url is normally the tiny downscaled source (single-tile upload,
@@ -337,9 +328,9 @@ const FluidBackground: React.FC<FluidBackgroundProps> = memo(({ coverUrl, theme 
                                     aria-hidden="true"
                                     draggable={false}
                                     decoding="async"
-                                    className="absolute inset-0 w-full h-full object-cover"
+                                    className="absolute inset-0 w-full h-full object-contain"
                                     style={{
-                                        transform: 'scale(1.36) translateZ(0)',
+                                        transform: 'translateZ(0)',
                                         opacity: 0.12,
                                         willChange: 'transform, opacity',
                                         backfaceVisibility: 'hidden',

@@ -15,6 +15,7 @@ describe('visualizer background registry', () => {
         expect(VISUALIZER_BACKGROUND_REGISTRY.map(entry => entry.mode)).toEqual([
             'common',
             'monet',
+            'soft-cover',
             'nomand',
             'latent',
             'url',

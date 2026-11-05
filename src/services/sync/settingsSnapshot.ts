@@ -1,3 +1,5 @@
+import { useSoftCoverSettingsStore } from '../../stores/useSoftCoverSettingsStore';
+import type { SoftCoverTuning } from '../../types/softCover';
 import { useVisualizerSettingsStore, type VisualizerSettingsState } from '../../stores/useVisualizerSettingsStore';
 import { useTypographySettingsStore, type TypographySettingsState } from '../../stores/useTypographySettingsStore';
 import { useLyricSettingsStore, type LyricSettingsState } from '../../stores/useLyricSettingsStore';
@@ -18,10 +20,13 @@ import { applyVisualizerTuningsToSettings, collectVisualizerTunings } from '../.
 /** The two stores the synced visual document spans, read as one snapshot. */
 export type SyncableSettingsState = VisualizerSettingsState
     & TypographySettingsState & LyricSettingsState
-    & HomeLayoutSettingsState & PlayerChromeSettingsState & ThemeSettingsState;
+    & HomeLayoutSettingsState & PlayerChromeSettingsState & ThemeSettingsState
+    & { softCoverTuning: SoftCoverTuning; setSoftCoverTuning: (patch: Partial<SoftCoverTuning>) => void };
 
 export const readSyncableSettingsState = (): SyncableSettingsState => ({
     ...useVisualizerSettingsStore.getState(),
+    softCoverTuning: useSoftCoverSettingsStore.getState().tuning,
+    setSoftCoverTuning: useSoftCoverSettingsStore.getState().update,
     ...useTypographySettingsStore.getState(),
     ...useLyricSettingsStore.getState(),
     ...useHomeLayoutSettingsStore.getState(),
@@ -59,6 +64,7 @@ export const buildSyncedVisualSettings = (state: SyncableSettingsState): SyncedV
     cappellaTuning: state.cappellaTuning,
     tiltTuning: state.tiltTuning,
     dioramaTuning: state.dioramaTuning,
+    softCoverTuning: state.softCoverTuning,
     monetBackgroundTuning: state.monetBackgroundTuning,
     nomandBackgroundTuning: state.nomandBackgroundTuning,
     latentBackgroundTuning: state.latentBackgroundTuning,
@@ -126,6 +132,7 @@ export const applySyncedVisualSettings = (
     if (settings.visualizerTunings === undefined && settings.cappellaTuning !== undefined) state.handleSetCappellaTuning(settings.cappellaTuning as Parameters<SyncableSettingsState['handleSetCappellaTuning']>[0]);
     if (settings.visualizerTunings === undefined && settings.tiltTuning !== undefined) state.handleSetTiltTuning(settings.tiltTuning as Parameters<SyncableSettingsState['handleSetTiltTuning']>[0]);
     if (settings.visualizerTunings === undefined && settings.dioramaTuning !== undefined) state.handleSetDioramaTuning(settings.dioramaTuning as Parameters<SyncableSettingsState['handleSetDioramaTuning']>[0]);
+    if (settings.softCoverTuning !== undefined) state.setSoftCoverTuning(settings.softCoverTuning as Partial<SoftCoverTuning>);
     if (settings.monetBackgroundTuning !== undefined) state.handleSetMonetBackgroundTuning(settings.monetBackgroundTuning as Parameters<SyncableSettingsState['handleSetMonetBackgroundTuning']>[0]);
     if (settings.nomandBackgroundTuning !== undefined) state.handleSetNomandBackgroundTuning(settings.nomandBackgroundTuning as Parameters<SyncableSettingsState['handleSetNomandBackgroundTuning']>[0]);
     if (settings.latentBackgroundTuning !== undefined) state.handleSetLatentBackgroundTuning(settings.latentBackgroundTuning as Parameters<SyncableSettingsState['handleSetLatentBackgroundTuning']>[0]);

@@ -54,6 +54,7 @@ export type SyncedVisualSettings = {
     cappellaTuning?: unknown;
     tiltTuning?: unknown;
     dioramaTuning?: unknown;
+    softCoverTuning?: unknown;
     monetBackgroundTuning?: unknown;
     nomandBackgroundTuning?: unknown;
     latentBackgroundTuning?: unknown;

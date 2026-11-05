@@ -8,8 +8,6 @@ import {
 } from '@paper-design/shaders-react';
 import { DEFAULT_NOMAND_BACKGROUND_TUNING, type MonetBackgroundImage, type NomandBackgroundTuning, type Theme } from '../../../../types';
 import {
-    getLensDistortionOverscan,
-    getPaperTextureOverscan,
     NOMAND_LENS_SHAPE,
     NOMAND_PAPER_TEXTURE_SHAPE,
     resolveDaylightInversion,
@@ -54,7 +52,7 @@ const NomandBackgroundLayer: React.FC<NomandBackgroundLayerProps> = ({
             width: '100%' as const,
             height: '100%' as const,
             image: sourceUrl,
-            fit: 'cover' as const,
+            fit: 'contain' as const,
             minPixelRatio: 1,
             maxPixelCount: 1920 * 1080,
             style: { width: '100%', height: '100%' },
@@ -90,7 +88,7 @@ const NomandBackgroundLayer: React.FC<NomandBackgroundLayerProps> = ({
                         contrast={tuning.paperTextureContrast}
                         roughness={tuning.paperTextureRoughness}
                         fiber={tuning.paperTextureFiber}
-                        scale={getPaperTextureOverscan(tuning.paperTextureRoughness, tuning.paperTextureFiber)}
+                        scale={1}
                     />
                 );
             case 'halftone-dots':
@@ -125,7 +123,7 @@ const NomandBackgroundLayer: React.FC<NomandBackgroundLayerProps> = ({
                         spread={tuning.lensDistortionSpread}
                         dispersion={tuning.lensDistortionDispersion}
                         lensBulge={tuning.lensDistortionBulge}
-                        scale={getLensDistortionOverscan(tuning.lensDistortionBulge, tuning.lensDistortionSpread)}
+                        scale={1}
                     />
                 );
             default:

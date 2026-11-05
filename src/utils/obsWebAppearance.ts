@@ -143,6 +143,7 @@ export function buildObsAppearanceFromShortcode(
       disableGeometricBackground: decoded?.disableVisualizerGeometricBackground,
       disableVignette: decoded?.disableVisualizerVignette,
     },
+    softCover: decoded?.softCoverTuning ? { tuning: decoded.softCoverTuning } : undefined,
     monet: decoded?.monetBackgroundTuning ? { tuning: decoded.monetBackgroundTuning } : undefined,
     nomand: decoded?.nomandBackgroundTuning ? { tuning: decoded.nomandBackgroundTuning } : undefined,
     latent: decoded?.latentBackgroundTuning ? { tuning: decoded.latentBackgroundTuning } : undefined,

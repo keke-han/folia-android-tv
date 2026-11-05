@@ -27,7 +27,7 @@ android {
         manifestPlaceholders = [foliaAppLabel: isTvBuild ? "Folia TV" : "Folia", foliaOrientation: isTvBuild ? "landscape" : "unspecified"]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 240
+        versionCode 242
         versionName packageJson.version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

@@ -1,3 +1,4 @@
+import { useSoftCoverSettingsStore } from '../../stores/useSoftCoverSettingsStore';
 import { collectVisualizerTunings } from '../../components/visualizer/tuningRegistry';
 import { readStoredThemeAutoGenerateEnabled, readStoredThemeAutoSwitchEnabled, readStoredThemeGenerationSource } from '../themePreferences';
 import type { CappellaAvatarImage, CappellaEmojiImage, CappellaTuning, MonetBackgroundImage, MonetBackgroundTuning, MonetPortraitImage, MonetTuning, NomandBackgroundTuning } from '../../types';
@@ -32,6 +33,7 @@ export function buildVisualSettingsConfig(): Record<string, unknown> {
     visualizerMode: storeVisualizer.visualizerMode,
     randomVisualizerModePerSong: storeVisualizer.randomVisualizerModePerSong,
     visualizerBackgroundMode: storeVisualizer.visualizerBackgroundMode,
+    softCoverTuning: useSoftCoverSettingsStore.getState().tuning,
     backgroundOpacity: storeVisualizer.backgroundOpacity,
     // The other three legs of background.common, alongside the opacity above. The local OBS browser
     // source has always carried them (it publishes the whole VisualizerBackgroundConfig), so leaving

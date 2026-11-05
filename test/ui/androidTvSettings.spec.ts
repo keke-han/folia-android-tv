@@ -253,10 +253,10 @@ test('background choices are entered directly and every type is selectable with 
     await menu.focus();
     await page.keyboard.press('ArrowRight');
     const choices = scope.locator('[data-tv-focus-group="background"] [data-tv-choice]');
-    await expect(choices).toHaveCount(6);
+    await expect(choices).toHaveCount(7);
     await expect(choices.first()).toBeFocused();
-    const order = [0, 1, 2, 5, 4, 3];
-    const keys = ['ArrowRight', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowLeft'];
+    const order = [0, 1, 2, 5, 4, 3, 6];
+    const keys = ['ArrowRight', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowLeft', 'ArrowDown'];
     for (let step = 0; step < order.length; step++) {
         const choice = choices.nth(order[step]);
         await expect(choice).toBeFocused();
@@ -438,4 +438,47 @@ test('TV focus uses a contrasting yellow ring while the chosen category keeps it
     await expect(scope).toHaveCSS('opacity', '1');
     await expect(scope.locator('[data-ponder="vis-playground"]')).toHaveCSS('opacity', '1');
     await page.screenshot({ path: 'test-results/tv-high-contrast-focus.png' });
+});
+test('soft-cover keeps square, portrait and landscape artwork inside the preview and saves its controls', async ({ page }) => {
+    await openSettings(page, 'visualizer');
+    const scope = page.locator('[data-folia-tv-scope="visualizer"]');
+    await scope.locator('[data-tv-sidebar] button').nth(2).focus();
+    await page.keyboard.press('ArrowRight');
+    const choice = scope.locator('[data-tv-choice="soft-cover"]');
+    await choice.focus();
+    await page.keyboard.press('Enter');
+    await expect(choice).toHaveAttribute('aria-pressed', 'true');
+    await expect(scope.locator('[data-complete-cover]').last()).toHaveCSS('filter', 'blur(1px)');
+    await expect(scope.locator('[data-background-mode="soft-cover"] img:not([data-complete-cover])').last()).toHaveCSS('filter', 'blur(12px)');
+    await scope.getByRole('button', { name: '自定义图片', exact: true }).click();
+    for (const [width, height] of [[800, 800], [600, 1200], [1800, 600]]) {
+        await page.evaluate(async ({ width, height }) => {
+            const assetPath = '/src/stores/useVisualizerAssetStore.ts';
+            const { useVisualizerAssetStore } = await import(assetPath);
+            const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+            const context = canvas.getContext('2d')!;
+            context.fillStyle = '#314589'; context.fillRect(0, 0, width, height);
+            const size = Math.min(width, height) / 8;
+            for (const [x, y, color] of [[0, 0, 'red'], [width - size, 0, 'lime'], [0, height - size, 'blue'], [width - size, height - size, 'yellow']] as const) {
+                context.fillStyle = color; context.fillRect(x, y, size, size);
+            }
+            useVisualizerAssetStore.getState().setMonetBackgroundImage({ id: `test-${width}`, name: 'Four corners', url: canvas.toDataURL() });
+        }, { width, height });
+        const image = scope.locator('[data-tv-live-preview] [data-complete-cover]').last();
+        await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth)).toBe(width);
+        const bounds = await image.evaluate(node => {
+            const image = node.getBoundingClientRect(), frame = node.parentElement!.getBoundingClientRect();
+            return { x: image.left - frame.left, y: image.top - frame.top, right: frame.right - image.right,
+                bottom: frame.bottom - image.bottom, ratio: image.width / image.height, transform: getComputedStyle(node).transform };
+        });
+        for (const inset of [bounds.x, bounds.y, bounds.right, bounds.bottom]) expect(inset).toBeGreaterThanOrEqual(-0.5);
+        expect(bounds.ratio).toBeCloseTo(width / height, 2);
+        expect(bounds.transform).toBe('none');
+    }
+    const blur = scope.getByRole('slider', { name: '背景模糊', exact: true });
+    await blur.focus();
+    await page.keyboard.press('ArrowRight');
+    const value = await blur.inputValue();
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('soft_cover_tuning')!).blur)).toBe(Number(value));
+    await page.screenshot({ path: 'test-results/tv-soft-cover-settings.png' });
 });
